@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  blazorhostingtest:
+    image: ${DOCKER_REGISTRY-}blazorhostingtest
+    build:
+      context: .
+      dockerfile: BlazorHostingTest/Dockerfile

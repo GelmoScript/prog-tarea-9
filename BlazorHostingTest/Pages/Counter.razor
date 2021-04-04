@@ -1,0 +1,95 @@
+﻿@page "/counter"
+@using BlazorHostingTest.Entities
+@using BlazorHostingTest.Services
+@inject IUserRepository repo
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div class="my-4">
+    @if (users != null)
+    {
+        <ul>
+            @foreach (var user in users)
+            {
+                <li @onclick="() => SelectUser(user.Id)">@user.Name @user.LastName</li>
+            }
+        </ul>
+    }
+</div>
+
+<EditForm Model="@user" class="my-4">
+    <label>
+        @user.Id
+    </label>
+    <p>
+        <label>
+            Name:
+            <InputText class="form-control" id="name" @bind-Value="user.Name" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Last Name:
+            <InputText class="form-control" id="lastname" @bind-Value="user.LastName" />
+        </label>
+    </p>
+
+    <button class="btn btn-primary" @onclick="() => AddUser(user)">
+        Agregar
+    </button>
+    <button class="btn btn-secondary" @onclick="() => UpdateUser(user)">
+        Editar
+    </button>
+    <button class="btn btn-danger" @onclick="() => DeleteUser(user)">
+        Eliminar
+    </button>
+</EditForm>
+
+@code {
+    private int currentCount = 0;
+    private User user = new User();
+    private IEnumerable<User> users;
+
+    protected override void OnInitialized()
+    {
+        RefreshList();
+    }
+
+    void SelectUser(int userId)
+    {
+        var userSelected = repo.GetUserById(userId);
+        user = userSelected;
+    }
+
+    void AddUser(User user)
+    {
+        repo.AddUser(user);
+        RefreshList();
+    }
+
+    void UpdateUser(User user)
+    {
+        repo.UpdateUser(user);
+        RefreshList();
+    }
+
+    void DeleteUser(User user)
+    {
+        repo.DeleteUser(user);
+        RefreshList();
+    }
+
+    void RefreshList()
+    {
+        users = repo.GetUsers();
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
